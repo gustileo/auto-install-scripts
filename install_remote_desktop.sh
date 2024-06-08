@@ -26,4 +26,9 @@ sudo apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.
 # Cleanup
 rm google-chrome-stable_current_amd64.deb
 
-echo "Installation of Google Remote Desktop and XFCE is complete."
+# Step 5: Download and execute setup.sh for additional software installation
+curl -O https://raw.githubusercontent.com/your-username/auto-install-scripts/main/setup.sh
+chmod +x setup.sh
+./setup.sh
+
+echo "Installation of Google Remote Desktop, XFCE, and additional software is complete."

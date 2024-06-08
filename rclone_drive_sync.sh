@@ -79,12 +79,19 @@ RCLONE_CONFIG="/home/noeruid/.config/rclone/rclone.conf"
 echo "Environment Variables:" >> "$LOG_FILE"
 printenv >> "$LOG_FILE"
 
-# Use inotifywait to monitor the directory for new files
-inotifywait -m -e moved_to --format '%w%f' "$COMPLETED_DIR" | while read NEWFILE
+# Use inotifywait to monitor the directory for new files or directories
+inotifywait -m -e close_write,moved_to,create --format '%w%f' "$COMPLETED_DIR" | while read NEWFILE
 do
-  echo "Detected new file for upload: $NEWFILE" >> "$LOG_FILE"
-  # Use rclone to copy the file to Google Drive with verbose logging
-  rclone --config="$RCLONE_CONFIG" copy "$NEWFILE" "$REMOTE_DIR" -vv 2>> "$LOG_FILE" && echo "Successfully uploaded $NEWFILE to $REMOTE_DIR" >> "$LOG_FILE" || echo "Failed to upload $NEWFILE" >> "$LOG_FILE"
+  echo "Detected new file or directory for upload: $NEWFILE" >> "$LOG_FILE"
+  if [ -d "$NEWFILE" ]; then
+    echo "Detected directory: $NEWFILE" >> "$LOG_FILE"
+    # If it's a directory, use rclone to copy the directory recursively
+    rclone --config="$RCLONE_CONFIG" copy "$NEWFILE" "$REMOTE_DIR/$(basename "$NEWFILE")" -vv 2>> "$LOG_FILE" && echo "Successfully uploaded directory $NEWFILE to $REMOTE_DIR" >> "$LOG_FILE" || echo "Failed to upload directory $NEWFILE" >> "$LOG_FILE"
+  else
+    echo "Detected file: $NEWFILE" >> "$LOG_FILE"
+    # If it's a file, use rclone to copy the file
+    rclone --config="$RCLONE_CONFIG" copy "$NEWFILE" "$REMOTE_DIR" -vv 2>> "$LOG_FILE" && echo "Successfully uploaded file $NEWFILE to $REMOTE_DIR" >> "$LOG_FILE" || echo "Failed to upload file $NEWFILE" >> "$LOG_FILE"
+  fi
 done
 EOF
 

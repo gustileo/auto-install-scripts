@@ -27,7 +27,7 @@ sudo apt install --assume-yes --fix-broken ./google-chrome-stable_current_amd64.
 rm google-chrome-stable_current_amd64.deb
 
 # Step 5: Download and execute setup.sh for additional software installation
-curl -O https://raw.githubusercontent.com/your-username/auto-install-scripts/main/setup.sh
+curl -O https://raw.githubusercontent.com/noeruid/auto-install-scripts/main/setup.sh
 chmod +x setup.sh
 ./setup.sh
 
